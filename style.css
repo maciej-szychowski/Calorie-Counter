@@ -1,0 +1,221 @@
+*,
+*::after, 
+*::before {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    outline: none;
+}
+
+:root {
+    --primaryColor: rgb(110, 194, 209);
+    --secondaryColor: rgb(42, 100, 105);
+    font-size: 62.5%;
+}
+
+body {
+    min-height: 100vh;
+    padding: 0 0 4rem 0;
+    font-family: 'Roboto', sans-serif;
+}
+
+.navigation {
+    display: flex;
+    padding: 1.5rem 2rem;
+    background-image: linear-gradient(to right,var(--primaryColor),var(--secondaryColor));
+    color: rgb(255,255,255);
+}
+
+.titleApp {
+    width: 100%;
+    text-align: center;
+    font-size: 2.2rem;
+    font-weight: 300;
+}
+
+.btn-all {
+    background-image: linear-gradient(to right,rgb(158, 223, 235),rgb(113, 208, 224));
+    font-size: 1.5rem;
+    padding: 0.5rem 0.5rem;
+    width: 10rem; 
+    border: none;
+    border-radius: 0.5rem;
+    box-shadow: 1px 1px 1px var(--secondaryColor);
+    color: rgb(255,255,255);
+    font-size: 1.5rem;
+    margin-left: 1rem;
+    transition: transform 0.2s;
+}
+
+.btn-all:hover {
+    transform: scale(1.02); 
+}
+
+.btn-all:active {
+    transform: translateY(0.2rem);
+}
+
+.app-section {
+    position: relative;
+}
+
+.meal-container {
+    position: relative;
+    width: 90%;
+    margin: 0 auto;
+    padding: 2rem 2rem 0.5rem;
+    margin-top: 2rem;
+    box-shadow: 0 1px 5px rgb(199, 194, 194);
+}
+
+.input-container {
+    display: flex;
+    padding: 2rem 0;
+}
+
+input {
+    width: 90%;
+    padding: 0.3rem 0;
+    border: none;
+    border-bottom: 1px solid rgb(226, 224, 224);
+}
+
+input::placeholder {
+    color: rgb(192, 184, 184)
+}
+
+label {
+    color: rgb(107, 163, 173);
+}
+
+.form-input {
+    display: flex;
+    flex-direction: column;
+}
+
+.title-meal {
+    font-weight: 300;
+}
+
+.buttons button {
+    font-size: 1rem;
+    padding: 0.5rem 0.5rem;
+    margin-left: 0.3rem;
+    border: 0;
+    border-radius: 0.3rem;
+    box-shadow: 1px 1px 3px grey;
+    color: rgb(255,255,255);
+}
+
+.btn-close {
+    position: absolute;
+    right: 2rem;
+    top: 1rem;
+    background-color: rgb(255, 0, 0);
+    border: 0.1rem solid rgb(255, 0, 0);
+    padding: 0.2rem 0.5rem;
+    color: rgb(255,255,255);
+    font-size: 1rem;
+    box-shadow: 0.1rem 0.1rem 0.2rem rgb(0,0,0);
+    border-radius: 0.3rem;
+    font-weight: bold;
+    transition: background-color 0.3s, color 0.2s;
+}
+
+.btn-close:hover {
+    background-color: rgb(255,255,255);
+    color: rgb(255, 0, 0);
+    border: 0.1rem solid rgb(255, 0, 0);
+}
+
+.btn-back {
+    background-color: rgb(40, 170, 23);
+}
+
+.btn-update {
+    background-color:orange;
+}
+
+.btn-add {
+    background-color: var(--primaryColor);
+}
+
+.btn-delete {
+    background-color: rgb(231, 9, 9);
+}
+
+.btn-update,
+.btn-back,
+.btn-delete {
+    display: none;
+}
+
+.add-another-meal {
+    font-size: 1.2rem;
+    padding: 1rem 0.7rem;
+    margin: 1rem 0 0 3rem;
+    border: 0;
+    border-radius: 0.5rem;
+    box-shadow: 1px 1px 3px var(--primaryColor);
+    border: 1px solid var(--primaryColor);
+    background-color:rgb(255, 255, 255);
+    color: var(--primaryColor);
+    transition: color 0.4s, background-color 0.4s;
+}
+
+.add-another-meal:hover {
+    background-color: var(--primaryColor);
+    color: rgb(255,255,255);
+}
+
+.add-another-meal:active {
+    transform: translateY(1px);
+}
+
+.meal-items {
+    margin: 2rem 2rem 0.7rem;
+}
+
+.meal-items-title {
+    text-align: center;
+    font-weight: 300;
+    font-size: 1.5rem;
+}
+
+.meal-items ul {
+    padding: 1.2rem 0;
+    list-style-type: none;
+    font-size: 1.2rem;
+}
+
+.meal-items li {
+    position: relative;
+    height: 2.2rem;
+}
+
+.item-callories {
+    margin-left: 1rem;
+}
+
+.meal-items em,
+.item-callories {
+    color: grey;
+    font-size: 1rem;
+}
+
+.fa-pencil-alt {
+    position: absolute;
+    right: 0;
+    font-size: 1rem;
+}
+
+.totalCalories {
+    position: absolute;
+    right: 20%;
+    padding: 6rem 0 2rem 0;
+    font-size: 1.4rem;
+}
+
+.totalCalories h3 {
+    font-weight: 300;
+}
