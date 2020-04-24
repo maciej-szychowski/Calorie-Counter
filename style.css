@@ -209,6 +209,10 @@ label {
     font-size: 1rem;
 }
 
+.fa-pencil-alt:hover {
+    color: rgb(207, 137, 7);
+}
+
 .totalCalories {
     position: absolute;
     right: 20%;

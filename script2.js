@@ -29,6 +29,11 @@ const Meals = (function() {
             let index = allMealContainers.indexOf(mealContainer);
             meals.splice(index, 1);
         },
+        //delete single item from meal after click btn-delete
+        deleteItem: function(indexMeal, itemIndex) {
+            meals[indexMeal].meal.splice(itemIndex, 1)
+
+        },
         //clear meals table
         clearMeals: function() {
             meals = [];
@@ -39,8 +44,8 @@ const Meals = (function() {
             meals.map(meal => meal.meal)
             .map((meal, index) => {
                 meal.map(items => {
-                    totalCalories += items.calories;
-                    calories += items.calories;                  
+                    totalCalories += (items.calories*1);
+                    calories += (items.calories*1);                  
                 })
                 meals[index].totalCalories = calories;
                 calories = 0;
@@ -48,10 +53,8 @@ const Meals = (function() {
             return totalCalories
         },
         //replacing update item in table
-        UpdateMeals: function(indexMeal, itemIndex) {
-            console.log(meals[indexMeal].meal);
-            meals[indexMeal].meal.splice(indexItem, 1, {})
-            
+        UpdateMeals: function(indexMeal, itemIndex, inputsValue) {
+            meals[indexMeal].meal.splice(itemIndex, 1, inputsValue)
         },
     }
 })();
@@ -97,7 +100,7 @@ const AppStructure = (function() {
             const inputTitle = event.target.parentElement.previousElementSibling.children[0].children[1];
             const inputCalories = event.target.parentElement.previousElementSibling.children[1].children[1];
             const title = inputTitle.value;
-            const calories = inputCalories.value;
+            const calories = inputCalories.value * 1;
             return {
                 title,
                 calories
@@ -117,6 +120,7 @@ const AppStructure = (function() {
             `;
             const ul = event.target.parentElement.parentElement.nextElementSibling.children[1];
             ul.innerHTML += html;
+            return ul
         },
         //delete meal container from DOM
         deleteMealDOM: function(mealContainer) {
@@ -164,6 +168,17 @@ const AppStructure = (function() {
                 }
             })
         },
+        //show add button, hide others buttons
+        hideButtons: function() {
+            const buttons = [...event.target.closest(".meal-container").children[2].children[1].children];
+            buttons.forEach(button => {
+                if(button.className == "btn-add") {
+                    button.style.display = "inline-block"
+                } else {
+                    button.style.display = "none"
+                }
+            })
+        },
         //disable enter key
         disableEnterKey: function() {
             document.body.addEventListener("keydown", function() {
@@ -172,15 +187,18 @@ const AppStructure = (function() {
                 }
             })  
         },
+        
         indexMealContainer: function(allMealContainers) {
             mealContainer = event.target.closest(".meal-container");
             const index = allMealContainers.indexOf(mealContainer);
             return index;            
         },
-        indexItem: function(actualLi){
-            const listItem = [...event.target.parentElement.parentElement.nextElementSibling.children[1].children];
+        indexItem: function(actualLi, listItem) {
             const index = listItem.indexOf(actualLi);
             return index;            
+        },
+        deleteLiItem: function(itemIndex, ul) {
+            ul.children[itemIndex].remove();
         }
     }
 
@@ -244,9 +262,38 @@ const App = (function(Meals, AppStructure) {
             actualLi = event.target.parentElement;     
         }
         if(event.target.classList.contains("btn-update")) {
+            const listItem = [...event.target.parentElement.parentElement.nextElementSibling.children[1].children];
             const indexMeal = AppStructure.indexMealContainer(allMealContainers)
-            const itemIndex = AppStructure.indexItem(actualLi);
-            Meals.UpdateMeals(indexMeal, itemIndex);
+            const itemIndex = AppStructure.indexItem(actualLi, listItem);
+            const inputValues = AppStructure.getInputValue();
+            Meals.UpdateMeals(indexMeal, itemIndex, inputValues);
+            const totalCalories = Meals.totalCalories();
+            AppStructure.displayTotalCalories(totalCalories);
+            const meals = Meals.getMeals();
+            AppStructure.displayMealCalories(meals);
+            const ul = AppStructure.displayIngredient(inputValues.title, inputValues.calories)
+            AppStructure.deleteLiItem(itemIndex, ul);
+            AppStructure.clearInputs();
+            AppStructure.hideButtons();
+        }
+        if(event.target.classList.contains("btn-back")) {
+            AppStructure.clearInputs();
+        }
+        if(event.target.classList.contains("btn-delete")) {
+            const ul = event.target.parentElement.parentElement.nextElementSibling.children[1];
+            const listItem = [...event.target.parentElement.parentElement.nextElementSibling.children[1].children];
+            const itemIndex = AppStructure.indexItem(actualLi, listItem);
+            AppStructure.deleteLiItem(itemIndex, ul)
+            AppStructure.clearInputs();
+            const indexMeal = AppStructure.indexMealContainer(allMealContainers)
+            Meals.deleteItem(indexMeal, itemIndex)
+            AppStructure.hideButtons();
+            const totalCalories = Meals.totalCalories();
+            AppStructure.displayTotalCalories(totalCalories);
+            const meals = Meals.getMeals();
+            AppStructure.displayMealCalories(meals);
+            console.log(Meals.getMeals());
+            
         }
     }
     return {
