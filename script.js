@@ -1,12 +1,10 @@
 
 const Meals = (function() {
-   let meals = [
-       
-    ];
+    let meals = [];
 
     const CartMeal = function() {
         return {meal:[], totalCalories: 0}
-    }
+    };
 
     return {
         getMeals: function() {
@@ -31,8 +29,7 @@ const Meals = (function() {
         },
         //delete single item from meal after click btn-delete
         deleteItem: function(indexMeal, itemIndex) {
-            meals[indexMeal].meal.splice(itemIndex, 1)
-
+            meals[indexMeal].meal.splice(itemIndex, 1);
         },
         //clear meals table
         clearMeals: function() {
@@ -46,15 +43,15 @@ const Meals = (function() {
                 meal.map(items => {
                     totalCalories += (items.calories*1);
                     calories += (items.calories*1);                  
-                })
+                });
                 meals[index].totalCalories = calories;
                 calories = 0;
             })
-            return totalCalories
+            return totalCalories;
         },
         //replacing update item in table
         UpdateMeals: function(indexMeal, itemIndex, inputsValue) {
-            meals[indexMeal].meal.splice(itemIndex, 1, inputsValue)
+            meals[indexMeal].meal.splice(itemIndex, 1, inputsValue);
         },
     }
 })();
@@ -67,7 +64,7 @@ const AppStructure = (function() {
             let html = `
             <div class="meal-container">
             <h2 class="title-meal">Create Meal</h2>
-            <button class="btn-close">X</button>
+            <button class="btn-close">x</button>
             <form>
                 <div class="input-container">
                     <div class="form-input">
@@ -119,7 +116,7 @@ const AppStructure = (function() {
             <li>${title} <span class="item-callories">${calories}</span> <em>Calories </em><i class="fas fa-pencil-alt"></i></li>
             `;
             const ul = event.target.parentElement.parentElement.nextElementSibling.children[1];
-            ul.innerHTML += html;
+            ul.insertAdjacentHTML("beforeend", html);
             return ul
         },
         //delete meal container from DOM
@@ -141,7 +138,7 @@ const AppStructure = (function() {
             const spanCalories = [...document.querySelectorAll(".meal-items-title span")];
             meals.forEach((meal, index) => {
                 spanCalories[index].innerText = meal.totalCalories;
-            }) 
+            }); 
         },
         //get title and calories value
         getMealValue: function() {
@@ -166,18 +163,18 @@ const AppStructure = (function() {
                 } else {
                     button.style.display = "inline-block"
                 }
-            })
+            });
         },
         //show add button, hide others buttons
         hideButtons: function() {
             const buttons = [...event.target.closest(".meal-container").children[2].children[1].children];
             buttons.forEach(button => {
                 if(button.className == "btn-add") {
-                    button.style.display = "inline-block"
+                    button.style.display = "inline-block";
                 } else {
-                    button.style.display = "none"
+                    button.style.display = "none";
                 }
-            })
+            });
         },
         //disable enter key
         disableEnterKey: function() {
@@ -185,7 +182,7 @@ const AppStructure = (function() {
                 if(event.keyCode === 13) {
                     event.preventDefault();
                 }
-            })  
+            });  
         },
         
         indexMealContainer: function(allMealContainers) {
@@ -201,10 +198,7 @@ const AppStructure = (function() {
             ul.children[itemIndex].remove();
         }
     }
-
 })();
-
-
 
 const App = (function(Meals, AppStructure) {
     const appContainer = document.querySelector(".app-container");
@@ -217,7 +211,7 @@ const App = (function(Meals, AppStructure) {
             AppStructure.createMeal();
             Meals.addMeal();
         });    
-    }
+    };
     //delete all meals
     const deleteAllMeals = function() {
         const allMealContainers = [...document.querySelectorAll(".meal-container")];  
@@ -227,7 +221,7 @@ const App = (function(Meals, AppStructure) {
             const totalCalories = Meals.totalCalories();
             AppStructure.displayTotalCalories(totalCalories); 
         }
-    }
+    };
  
     const eventListener = function() {
         event.preventDefault();
@@ -263,18 +257,20 @@ const App = (function(Meals, AppStructure) {
         }
         if(event.target.classList.contains("btn-update")) {
             const listItem = [...event.target.parentElement.parentElement.nextElementSibling.children[1].children];
-            const indexMeal = AppStructure.indexMealContainer(allMealContainers)
+            const indexMeal = AppStructure.indexMealContainer(allMealContainers);
             const itemIndex = AppStructure.indexItem(actualLi, listItem);
             const inputValues = AppStructure.getInputValue();
-            Meals.UpdateMeals(indexMeal, itemIndex, inputValues);
-            const totalCalories = Meals.totalCalories();
-            AppStructure.displayTotalCalories(totalCalories);
-            const meals = Meals.getMeals();
-            AppStructure.displayMealCalories(meals);
-            const ul = AppStructure.displayIngredient(inputValues.title, inputValues.calories)
-            AppStructure.deleteLiItem(itemIndex, ul);
-            AppStructure.clearInputs();
-            AppStructure.hideButtons();
+            if(inputValues.title && inputValues.calories){
+                Meals.UpdateMeals(indexMeal, itemIndex, inputValues);
+                const totalCalories = Meals.totalCalories();
+                AppStructure.displayTotalCalories(totalCalories);
+                const meals = Meals.getMeals();
+                AppStructure.displayMealCalories(meals);
+                const ul = AppStructure.displayIngredient(inputValues.title, inputValues.calories);
+                AppStructure.deleteLiItem(itemIndex, ul);
+                AppStructure.clearInputs();
+                AppStructure.hideButtons();
+            }
         }
         if(event.target.classList.contains("btn-back")) {
             AppStructure.clearInputs();
@@ -283,17 +279,16 @@ const App = (function(Meals, AppStructure) {
             const ul = event.target.parentElement.parentElement.nextElementSibling.children[1];
             const listItem = [...event.target.parentElement.parentElement.nextElementSibling.children[1].children];
             const itemIndex = AppStructure.indexItem(actualLi, listItem);
-            AppStructure.deleteLiItem(itemIndex, ul)
+            AppStructure.deleteLiItem(itemIndex, ul);
             AppStructure.clearInputs();
-            const indexMeal = AppStructure.indexMealContainer(allMealContainers)
-            Meals.deleteItem(indexMeal, itemIndex)
+            const indexMeal = AppStructure.indexMealContainer(allMealContainers);
+            Meals.deleteItem(indexMeal, itemIndex);
             AppStructure.hideButtons();
             const totalCalories = Meals.totalCalories();
             AppStructure.displayTotalCalories(totalCalories);
             const meals = Meals.getMeals();
             AppStructure.displayMealCalories(meals);
             console.log(Meals.getMeals());
-            
         }
     }
     return {
@@ -302,8 +297,7 @@ const App = (function(Meals, AppStructure) {
             appContainer.addEventListener("click", eventListener);   
             btnClearAll.addEventListener("click", deleteAllMeals);
         }
-    }
-    
+    } 
 })(Meals, AppStructure);
 
 App.init()

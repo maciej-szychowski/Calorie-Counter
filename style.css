@@ -34,7 +34,7 @@ body {
 }
 
 .btn-all {
-    background-image: linear-gradient(to right,rgb(158, 223, 235),rgb(113, 208, 224));
+    background-color: var(--primaryColor);
     font-size: 1.5rem;
     padding: 0.5rem 0.5rem;
     width: 10rem; 
@@ -44,11 +44,12 @@ body {
     color: rgb(255,255,255);
     font-size: 1.5rem;
     margin-left: 1rem;
-    transition: transform 0.2s;
+    transition: background-color 0.4s, color 0.4s;
 }
 
 .btn-all:hover {
-    transform: scale(1.02); 
+    background-color: rgb(255,255,255);
+    color: var(--primaryColor);
 }
 
 .btn-all:active {
@@ -98,7 +99,7 @@ label {
 }
 
 .buttons button {
-    font-size: 1rem;
+    font-size: 1.2rem;
     padding: 0.5rem 0.5rem;
     margin-left: 0.3rem;
     border: 0;
@@ -130,18 +131,38 @@ label {
 
 .btn-back {
     background-color: rgb(40, 170, 23);
+    transition: background-color 0.3s linear;
+}
+
+.btn-back:hover {
+    background-color: rgb(29, 128, 16);
 }
 
 .btn-update {
-    background-color:orange;
+    background-color:rgb(255, 165, 0);
+    transition: background-color 0.3s linear;
+}
+
+.btn-update:hover {
+    background-color:rgb(219, 148, 15);
 }
 
 .btn-add {
     background-color: var(--primaryColor);
+    transition: background-color 0.3s linear;
+}
+
+.btn-add:hover {
+    background-color: rgb(46, 159, 204);
 }
 
 .btn-delete {
     background-color: rgb(231, 9, 9);
+}
+
+.btn-delete:hover {
+    background-color: rgb(160, 9, 9);
+    transition: background-color 0.3s linear;
 }
 
 .btn-update,
@@ -151,9 +172,11 @@ label {
 }
 
 .add-another-meal {
-    font-size: 1.2rem;
+    display: block; 
+    width: 80%;
+    font-size: 1.4rem;
     padding: 1rem 0.7rem;
-    margin: 1rem 0 0 3rem;
+    margin: 1rem auto;
     border: 0;
     border-radius: 0.5rem;
     box-shadow: 1px 1px 3px var(--primaryColor);
@@ -222,4 +245,49 @@ label {
 
 .totalCalories h3 {
     font-weight: 300;
+}
+
+/* media queries */
+@media (min-width: 640px) {
+    .form-input {
+        width: 25rem;
+    }
+    input {
+        width: 90%;
+        padding: 0.8rem 0;
+    }
+}
+
+@media (min-width: 768px) {
+    :root {
+        font-size: 75%;
+    }
+}
+
+@media (min-width: 992px) {
+    :root {
+        font-size: 87.5%;
+    }
+
+    .form-input {
+        width: 30rem;
+    }
+
+    input {
+        font-size: 1.1rem;
+    }
+
+    .add-another-meal {
+        width: 50%;
+    }
+
+    .meal-container {
+        width: 70%;
+    }
+}
+
+@media (min-width: 1200px) {
+    .add-another-meal {
+        width: 40%;
+    }
 }
