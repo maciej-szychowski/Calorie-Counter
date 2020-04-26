@@ -10,12 +10,10 @@ const Meals = (function() {
         getMeals: function() {
             return meals;
         },
-        //add meal to table meals
         addMeal: function() {
             const singleMeal = new CartMeal();
             meals.push(singleMeal);
         },
-        //add single ingeredient to meal
         addIngredient: function(title, calories, allMealContainers) {
             event.preventDefault();
             calories = calories * 1;
@@ -24,14 +22,12 @@ const Meals = (function() {
             meals[indexMeal].meal.push({title, calories})        
         },
         deleteMeal: function(mealContainer, allMealContainers) {
-            let index = allMealContainers.indexOf(mealContainer);
+            const index = allMealContainers.indexOf(mealContainer);
             meals.splice(index, 1);
         },
-        //delete single item from meal after click btn-delete
         deleteItem: function(indexMeal, itemIndex) {
             meals[indexMeal].meal.splice(itemIndex, 1);
         },
-        //clear meals table
         clearMeals: function() {
             meals = [];
         },
@@ -49,7 +45,6 @@ const Meals = (function() {
             })
             return totalCalories;
         },
-        //replacing update item in table
         UpdateMeals: function(indexMeal, itemIndex, inputsValue) {
             meals[indexMeal].meal.splice(itemIndex, 1, inputsValue);
         },
@@ -59,9 +54,8 @@ const Meals = (function() {
 const AppStructure = (function() {
     
     return {
-        //create meal cart
         createMeal: function() {
-            let html = `
+            const html = `
             <div class="meal-container">
             <h2 class="title-meal">Create Meal</h2>
             <button class="btn-close">x</button>
@@ -92,7 +86,6 @@ const AppStructure = (function() {
             `;
             document.querySelector(".app-container").innerHTML += html;
         },
-          //get inputs value
         getInputValue: function() {
             const inputTitle = event.target.parentElement.previousElementSibling.children[0].children[1];
             const inputCalories = event.target.parentElement.previousElementSibling.children[1].children[1];
@@ -103,58 +96,49 @@ const AppStructure = (function() {
                 calories
             }
         },
-        //clear inputs
         clearInputs: function() {
             const inputTitle = event.target.parentElement.previousElementSibling.children[0].children[1];
             const inputCalories = event.target.parentElement.previousElementSibling.children[1].children[1];
             inputTitle.value = "";
             inputCalories.value = "";
         },
-        //add single ingredient to meal
         displayIngredient: function(title, calories) {
-            let html = `
+            const html = `
             <li>${title} <span class="item-callories">${calories}</span> <em>Calories </em><i class="fas fa-pencil-alt"></i></li>
             `;
             const ul = event.target.parentElement.parentElement.nextElementSibling.children[1];
             ul.insertAdjacentHTML("beforeend", html);
             return ul
         },
-        //delete meal container from DOM
         deleteMealDOM: function(mealContainer) {
             mealContainer.remove();
         },
-        //clear app-container
         clearAppContainer: function(mealContainer) {
             while(mealContainer.firstChild) {
                 mealContainer.removeChild(mealContainer.firstChild);
             }
         },
-        //display total calories
         displayTotalCalories: function(calories) {
             document.querySelector(".totalCalories span").innerText = calories;
         },
-        //display meal calories on cart
         displayMealCalories: function(meals) {
             const spanCalories = [...document.querySelectorAll(".meal-items-title span")];
             meals.forEach((meal, index) => {
                 spanCalories[index].innerText = meal.totalCalories;
             }); 
         },
-        //get title and calories value
         getMealValue: function() {
             return {
                 title: event.target.parentElement.childNodes[0].textContent,
                 calories: event.target.parentElement.childNodes[1].textContent
             } 
         },
-        //put back meal value to inputs
         updateInputs: function(title, calories) {
             const inputTitle = event.target.closest(".meal-container").children[2].children[0].children[0].children[1];
             const inputCalories = event.target.closest(".meal-container").children[2].children[0].children[1].children[1];
             inputTitle.value = title;
             inputCalories.value = calories;
         },
-        //hide button add, show other buttons
         showButtons: function() {
             const buttons = [...event.target.closest(".meal-container").children[2].children[1].children];
             buttons.forEach(button => {
@@ -165,7 +149,6 @@ const AppStructure = (function() {
                 }
             });
         },
-        //show add button, hide others buttons
         hideButtons: function() {
             const buttons = [...event.target.closest(".meal-container").children[2].children[1].children];
             buttons.forEach(button => {
@@ -176,7 +159,6 @@ const AppStructure = (function() {
                 }
             });
         },
-        //disable enter key
         disableEnterKey: function() {
             document.body.addEventListener("keydown", function() {
                 if(event.keyCode === 13) {
@@ -186,7 +168,7 @@ const AppStructure = (function() {
         },
         
         indexMealContainer: function(allMealContainers) {
-            mealContainer = event.target.closest(".meal-container");
+            const mealContainer = event.target.closest(".meal-container");
             const index = allMealContainers.indexOf(mealContainer);
             return index;            
         },
@@ -204,7 +186,6 @@ const App = (function(Meals, AppStructure) {
     const appContainer = document.querySelector(".app-container");
     const btnClearAll = document.querySelector(".btn-all");
     let actualLi;
-    //listen to addMeal btn
     const addMealCart = function() {
         const btnAddMeal = document.querySelector(".add-another-meal");
         btnAddMeal.addEventListener("click", () => {
@@ -212,7 +193,6 @@ const App = (function(Meals, AppStructure) {
             Meals.addMeal();
         });    
     };
-    //delete all meals
     const deleteAllMeals = function() {
         const allMealContainers = [...document.querySelectorAll(".meal-container")];  
         if(allMealContainers.length) {
@@ -241,9 +221,7 @@ const App = (function(Meals, AppStructure) {
         }  
         if(event.target.classList.contains("btn-close")) {
             const mealContainer = event.target.parentElement;
-            //delete meal container form DOM
             AppStructure.deleteMealDOM(mealContainer);
-            //delete meal from array meals
             Meals.deleteMeal(mealContainer, allMealContainers); 
             const totalCalories = Meals.totalCalories();
             AppStructure.displayTotalCalories(totalCalories);  
@@ -288,7 +266,6 @@ const App = (function(Meals, AppStructure) {
             AppStructure.displayTotalCalories(totalCalories);
             const meals = Meals.getMeals();
             AppStructure.displayMealCalories(meals);
-            console.log(Meals.getMeals());
         }
     }
     return {
