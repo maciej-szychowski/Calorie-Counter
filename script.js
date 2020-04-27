@@ -14,10 +14,9 @@ const Meals = (function() {
             const singleMeal = new CartMeal();
             meals.push(singleMeal);
         },
-        addIngredient: function(title, calories, allMealContainers) {
+        addIngredient: function(title, calories, allMealContainers, mealContainer) {
             event.preventDefault();
             calories = calories * 1;
-            const mealContainer = event.target.parentElement.parentElement.parentElement; 
             const indexMeal = allMealContainers.indexOf(mealContainer);
             meals[indexMeal].meal.push({title, calories})        
         },
@@ -86,9 +85,7 @@ const AppStructure = (function() {
             `;
             document.querySelector(".app-container").innerHTML += html;
         },
-        getInputValue: function() {
-            const inputTitle = event.target.parentElement.previousElementSibling.children[0].children[1];
-            const inputCalories = event.target.parentElement.previousElementSibling.children[1].children[1];
+        getInputValue: function(inputTitle, inputCalories) { 
             const title = inputTitle.value;
             const calories = inputCalories.value * 1;
             return {
@@ -96,19 +93,19 @@ const AppStructure = (function() {
                 calories
             }
         },
-        clearInputs: function() {
-            const inputTitle = event.target.parentElement.previousElementSibling.children[0].children[1];
-            const inputCalories = event.target.parentElement.previousElementSibling.children[1].children[1];
+        clearInputs: function(inputTitle, inputCalories) {
             inputTitle.value = "";
             inputCalories.value = "";
         },
-        displayIngredient: function(title, calories) {
+        updateInputs: function(title, calories, inputTitle, inputCalories) {
+            inputTitle.value = title;
+            inputCalories.value = calories;
+        },
+        displayIngredient: function(title, calories, ul) {
             const html = `
             <li>${title} <span class="item-callories">${calories}</span> <em>Calories </em><i class="fas fa-pencil-alt"></i></li>
             `;
-            const ul = event.target.parentElement.parentElement.nextElementSibling.children[1];
             ul.insertAdjacentHTML("beforeend", html);
-            return ul
         },
         deleteMealDOM: function(mealContainer) {
             mealContainer.remove();
@@ -130,17 +127,10 @@ const AppStructure = (function() {
         getMealValue: function() {
             return {
                 title: event.target.parentElement.childNodes[0].textContent,
-                calories: event.target.parentElement.childNodes[1].textContent
+                calories: event.target.parentElement.childNodes[1].textContent,
             } 
         },
-        updateInputs: function(title, calories) {
-            const inputTitle = event.target.closest(".meal-container").children[2].children[0].children[0].children[1];
-            const inputCalories = event.target.closest(".meal-container").children[2].children[0].children[1].children[1];
-            inputTitle.value = title;
-            inputCalories.value = calories;
-        },
-        showButtons: function() {
-            const buttons = [...event.target.closest(".meal-container").children[2].children[1].children];
+        showButtons: function(buttons) {
             buttons.forEach(button => {
                 if(button.className == "btn-add") {
                     button.style.display = "none"
@@ -149,8 +139,7 @@ const AppStructure = (function() {
                 }
             });
         },
-        hideButtons: function() {
-            const buttons = [...event.target.closest(".meal-container").children[2].children[1].children];
+        hideButtons: function(buttons) {
             buttons.forEach(button => {
                 if(button.className == "btn-add") {
                     button.style.display = "inline-block";
@@ -166,9 +155,7 @@ const AppStructure = (function() {
                 }
             });  
         },
-        
-        indexMealContainer: function(allMealContainers) {
-            const mealContainer = event.target.closest(".meal-container");
+        indexMealContainer: function(allMealContainers, mealContainer) {
             const index = allMealContainers.indexOf(mealContainer);
             return index;            
         },
@@ -183,93 +170,102 @@ const AppStructure = (function() {
 })();
 
 const App = (function(Meals, AppStructure) {
+    const {createMeal, clearAppContainer, displayTotalCalories, getInputValue, displayIngredient, clearInputs, displayMealCalories,
+         deleteMealDOM, getMealValue, updateInputs, showButtons, hideButtons, disableEnterKey, indexMealContainer, indexItem, deleteLiItem} = AppStructure
+    const {addMeal, clearMeals, totalCalories, addIngredient, getMeals, deleteMeal, UpdateMeals, deleteItem} = Meals;
     const appContainer = document.querySelector(".app-container");
     const btnClearAll = document.querySelector(".btn-all");
     let actualLi;
     const addMealCart = function() {
         const btnAddMeal = document.querySelector(".add-another-meal");
-        btnAddMeal.addEventListener("click", () => {
-            AppStructure.createMeal();
-            Meals.addMeal();
+        btnAddMeal.addEventListener("click", () => { 
+            createMeal();
+            addMeal();
         });    
     };
     const deleteAllMeals = function() {
         const allMealContainers = [...document.querySelectorAll(".meal-container")];  
         if(allMealContainers.length) {
-            Meals.clearMeals();
-            AppStructure.clearAppContainer(appContainer, allMealContainers);
-            const totalCalories = Meals.totalCalories();
-            AppStructure.displayTotalCalories(totalCalories); 
+            clearMeals();
+            clearAppContainer(appContainer, allMealContainers);
+            const totalCalorie = totalCalories();
+            displayTotalCalories(totalCalorie); 
         }
     };
  
     const eventListener = function() {
         event.preventDefault();
+        if(event.target.classList.contains("app-container")) return;
         const allMealContainers = [...document.querySelectorAll(".meal-container")]; 
-        if(event.target.classList.contains("btn-add")) {
-            const inputsValue = AppStructure.getInputValue();
-            const {title, calories} = inputsValue;
-            if(inputsValue.title && inputsValue.calories) {
-                Meals.addIngredient(title, calories, allMealContainers);
-                AppStructure.displayIngredient(title, calories);
-                AppStructure.clearInputs();
-                const totalCalories = Meals.totalCalories();
-                AppStructure.displayTotalCalories(totalCalories); 
-                const meals = Meals.getMeals();
-                AppStructure.displayMealCalories(meals);
+        const buttons = [...event.target.closest(".meal-container").children[2].children[1].children];
+        const inputTitle = event.target.closest(".meal-container").children[2].children[0].children[0].children[1];
+        const inputCalories = event.target.closest(".meal-container").children[2].children[0].children[1].children[1];
+        const mealContainer = event.target.closest(".meal-container");
+        const ul = event.target.closest(".meal-container").children[3].children[1];
+        
+            if(event.target.classList.contains("btn-add")) {
+                const inputsValue = getInputValue(inputTitle, inputCalories);
+                const {title, calories} = inputsValue;
+                if(title && calories && calories > 0) {
+                    addIngredient(title, calories, allMealContainers, mealContainer);
+                    displayIngredient(title, calories, ul);
+                    clearInputs(inputTitle, inputCalories);
+                    const totalCalorie = totalCalories();
+                    displayTotalCalories(totalCalorie); 
+                    const meals = getMeals();
+                    displayMealCalories(meals);
+                }  
             }  
-        }  
-        if(event.target.classList.contains("btn-close")) {
-            const mealContainer = event.target.parentElement;
-            AppStructure.deleteMealDOM(mealContainer);
-            Meals.deleteMeal(mealContainer, allMealContainers); 
-            const totalCalories = Meals.totalCalories();
-            AppStructure.displayTotalCalories(totalCalories);  
-        }
-        if(event.target.classList.contains("fa-pencil-alt")) {
-            const mealValue = AppStructure.getMealValue();
-            AppStructure.updateInputs(mealValue.title, mealValue.calories);
-            AppStructure.showButtons();   
-            AppStructure.disableEnterKey();    
-            actualLi = event.target.parentElement;     
-        }
-        if(event.target.classList.contains("btn-update")) {
-            const listItem = [...event.target.parentElement.parentElement.nextElementSibling.children[1].children];
-            const indexMeal = AppStructure.indexMealContainer(allMealContainers);
-            const itemIndex = AppStructure.indexItem(actualLi, listItem);
-            const inputValues = AppStructure.getInputValue();
-            if(inputValues.title && inputValues.calories){
-                Meals.UpdateMeals(indexMeal, itemIndex, inputValues);
-                const totalCalories = Meals.totalCalories();
-                AppStructure.displayTotalCalories(totalCalories);
-                const meals = Meals.getMeals();
-                AppStructure.displayMealCalories(meals);
-                const ul = AppStructure.displayIngredient(inputValues.title, inputValues.calories);
-                AppStructure.deleteLiItem(itemIndex, ul);
-                AppStructure.clearInputs();
-                AppStructure.hideButtons();
+            if(event.target.classList.contains("btn-close")) {
+                deleteMealDOM(mealContainer);
+                deleteMeal(mealContainer, allMealContainers); 
+                const totalCalorie = totalCalories();
+                displayTotalCalories(totalCalorie);  
             }
-        }
-        if(event.target.classList.contains("btn-back")) {
-            AppStructure.clearInputs();
-        }
-        if(event.target.classList.contains("btn-delete")) {
-            const ul = event.target.parentElement.parentElement.nextElementSibling.children[1];
-            const listItem = [...event.target.parentElement.parentElement.nextElementSibling.children[1].children];
-            const itemIndex = AppStructure.indexItem(actualLi, listItem);
-            AppStructure.deleteLiItem(itemIndex, ul);
-            AppStructure.clearInputs();
-            const indexMeal = AppStructure.indexMealContainer(allMealContainers);
-            Meals.deleteItem(indexMeal, itemIndex);
-            AppStructure.hideButtons();
-            const totalCalories = Meals.totalCalories();
-            AppStructure.displayTotalCalories(totalCalories);
-            const meals = Meals.getMeals();
-            AppStructure.displayMealCalories(meals);
-        }
+            if(event.target.classList.contains("fa-pencil-alt")) {
+                const mealValue = getMealValue();
+                updateInputs(mealValue.title, mealValue.calories, inputTitle, inputCalories);
+                showButtons(buttons);   
+                disableEnterKey();    
+                actualLi = event.target.parentElement;     
+            }
+            if(event.target.classList.contains("btn-update")) {
+                const listItem = [...event.target.parentElement.parentElement.nextElementSibling.children[1].children];
+                const indexMeal = indexMealContainer(allMealContainers, mealContainer);
+                const itemIndex = indexItem(actualLi, listItem);
+                const inputValues = getInputValue(inputTitle, inputCalories);
+                if(inputValues.title && inputValues.calories){
+                    UpdateMeals(indexMeal, itemIndex, inputValues);
+                    const totalCalorie = totalCalories();
+                    displayTotalCalories(totalCalorie);
+                    const meals = getMeals();
+                    displayMealCalories(meals);
+                    displayIngredient(inputValues.title, inputValues.calories, ul);
+                    deleteLiItem(itemIndex, ul);
+                    clearInputs(inputTitle, inputCalories);
+                    hideButtons(buttons);
+                }
+            }
+            if(event.target.classList.contains("btn-back")) {
+                clearInputs(inputTitle, inputCalories);
+            }
+            if(event.target.classList.contains("btn-delete")) {
+                const ul = event.target.parentElement.parentElement.nextElementSibling.children[1];
+                const listItem = [...event.target.parentElement.parentElement.nextElementSibling.children[1].children];
+                const itemIndex = indexItem(actualLi, listItem);
+                deleteLiItem(itemIndex, ul);
+                clearInputs(inputTitle, inputCalories);
+                const indexMeal = indexMealContainer(allMealContainers, mealContainer);
+                deleteItem(indexMeal, itemIndex);
+                hideButtons(buttons);
+                const totalCalorie = totalCalories();
+                displayTotalCalories(totalCalorie);
+                const meals = getMeals();
+                displayMealCalories(meals);
+            }
     }
     return {
-        init: function(){
+        init: function() {
             addMealCart();
             appContainer.addEventListener("click", eventListener);   
             btnClearAll.addEventListener("click", deleteAllMeals);
